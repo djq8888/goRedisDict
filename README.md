@@ -10,7 +10,7 @@ redis字典的go语言实现<br>
 * Delete
 * Next(迭代器)
 ## rehash
-* 暂不支持
+* 支持渐进式rehash（增加/删除/查找时进行）
 ## 与源码的差异
 * key只支持uint64类型
 * 哈希函数只支持求余法
