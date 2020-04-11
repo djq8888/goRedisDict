@@ -46,6 +46,11 @@ func (d *Dict) find(key uint64) *DictEntry {
 			}
 			he = he.next
 		}
+
+		//如果当前没有进行rehash，则无需遍历哈希表1
+		if !d.isRehashing() {
+			break
+		}
 	}
 
 	return nil
