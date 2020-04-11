@@ -18,6 +18,8 @@ type Dict struct {
 	Ht [2]Dictht
 	//记录rehash进度的标志，值为-1表示rehash未进行
 	rehash int
+	//当前正在运行的安全迭代器的数量
+	iterators int
 }
 
 //创建字典
