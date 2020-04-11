@@ -17,3 +17,8 @@ func (de *DictEntry) setKey(key uint64)  {
 func (de *DictEntry) setVal(key uint64, val interface{})  {
 	de.val = val
 }
+
+//获取哈希表节点的value
+func (de *DictEntry) getVal() interface{} {
+	return de.val
+}
