@@ -73,3 +73,13 @@ func (di *DictIterator) Next() *DictEntry {
 	}
 	return nil
 }
+
+//释放迭代器
+func Release(di **DictIterator) {
+	//如果是安全迭代器且已经开始遍历了
+	if (*di).safe && !((*di).index == -1 && (*di).table == 0) {
+		(*di).d.iterators--
+	}
+	//迭代器的内存释放由go语言的垃圾回收实现
+	*di = nil
+}
