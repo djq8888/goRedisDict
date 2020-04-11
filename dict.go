@@ -5,8 +5,8 @@ package goRedisDict
 const(
 	//哈希表初始大小
 	DICT_HT_INITIAL_SIZE = 4
-	//哈希表最大容量（uint64最大值）
-	LONG_MAX = ^uint32(0)
+	//哈希表最大容量
+	LONG_MAX = (^uint64(0) - 1) / 2
 	//哈希表是否可以扩容
 	dict_can_resize = true
 	//强制扩容比率

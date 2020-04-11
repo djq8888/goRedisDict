@@ -36,6 +36,8 @@ func (d *Dict) addRaw(key uint64) (*DictEntry, error) {
 	entry.next = d.Ht[table].table[index]
 	d.Ht[table].table[index] = entry
 
+	d.Ht[table].used++
+
 	//设置哈希表节点的key
 	entry.setKey(key)
 
