@@ -13,8 +13,10 @@ func (d *Dict) genericDelete(key uint64) error {
 		return errors.New("delete failed, hash table is nil.")
 	}
 
-	//TODO:渐进式rehash
-	//if d.isRehashing() {}
+	//渐进式rehash
+	if d.isRehashing() {
+		d.rehashStep()
+	}
 
 	//计算哈希值
 	h := d.hashKey(key)
@@ -24,16 +26,17 @@ func (d *Dict) genericDelete(key uint64) error {
 		idx := h & d.Ht[table].sizemask
 		he := d.Ht[table].table[idx]
 		//单链表删除
-		prev := new(DictEntry)
+		var prev *DictEntry
 		for he != nil {
 			if compare(key, he.key) {
-				if prev != nil {
+				if prev == nil {
 					//删除的是头节点
 					d.Ht[table].table[idx] = he.next
 				} else {
 					//删除的不是头节点
 					prev.next = he.next
 				}
+				d.Ht[0].used--
 				return nil
 			}
 			prev = he

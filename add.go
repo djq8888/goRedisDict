@@ -14,8 +14,10 @@ func (d *Dict) Add(key uint64, val interface{}) error {
 
 //添加一个key节点
 func (d *Dict) addRaw(key uint64) (*DictEntry, error) {
-	//TODO:渐进式rehash
-	//if d.isRehashing() {}
+	//渐进式rehash
+	if d.isRehashing() {
+		d.rehashStep()
+	}
 
 	//计算新节点的索引，如果key已经存在，返回nil
 	index, err := d.keyIndex(key)
@@ -79,7 +81,7 @@ func (d *Dict) keyIndex(key uint64) (uint64, error) {
 //哈希函数
 func (d *Dict) hashKey(key uint64) uint64 {
 	//TODO:源码是根据数据类型采用不同的哈希函数，这部分有些复杂，目前先假设key均为int类型，使用求余法计算哈希值
-	return key & d.Ht[0].sizemask
+	return key % 5381
 }
 
 //判断是否需要扩展（新建或扩容）哈希表
@@ -90,7 +92,7 @@ func (d *Dict) expandIfNeeded() error {
 	}
 
 	//如果哈希表未创建（说明是第一次添加key），则新建一个默认大小的哈希表
-	if d.Ht[0].size == 0 {
+	if d.Ht[0] == nil {
 		return d.expand(DICT_HT_INITIAL_SIZE)
 	}
 
@@ -111,7 +113,7 @@ func (d *Dict) expand(size uint64) error {
 	realsize := d.nextPower(size)
 
 	//size不应该小于哈希表中元素个数，此时也不应正在rehash
-	if d.isRehashing() || size <= d.Ht[0].used {
+	if d.isRehashing() || (d.Ht[0] != nil && size <= d.Ht[0].used) {
 		return errors.New("error while expanding.")
 	}
 
@@ -122,13 +124,13 @@ func (d *Dict) expand(size uint64) error {
 	ht.table = make([]*DictEntry, realsize)
 
 	//如果字典中的哈希表0此时为空，说明是第一次添加key，应将新建的哈希表赋给哈希表0
-	if d.Ht[0].table == nil {
-		d.Ht[0] = ht
+	if d.Ht[0] == nil {
+		d.Ht[0] = &ht
 		return nil
 	}
 
 	//如果字典中的哈希表0此时不为空，说明是哈希表需要扩容，应将新建的哈希表赋给哈希表1，并将rehash置为0
-	d.Ht[1] = ht
+	d.Ht[1] = &ht
 	d.rehash = 0
 	return nil
 }

@@ -30,8 +30,10 @@ func (d *Dict) find(key uint64) *DictEntry {
 		return nil
 	}
 
-	//TODO:渐进式rehash
-	//if d.isRehashing() {}
+	//渐进式rehash
+	if d.isRehashing() {
+		d.rehashStep()
+	}
 
 	//计算哈希值
 	h := d.hashKey(key)
